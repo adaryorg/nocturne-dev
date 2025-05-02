@@ -29,7 +29,7 @@ yay -Sy --noconfirm lazydocker
 sudo pacman -Sy --noconfirm gnome
 
 # install nerd fonts
-sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerdA
+sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd
 
 # some gnome stuff from AUR
 yay -Sy --noconfirm extension-manager pipx

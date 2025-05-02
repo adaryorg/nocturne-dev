@@ -7,7 +7,7 @@ if [ ! -d ~/.nocture_tmp ]; then
 fi
 
 git clone https://aur.archlinux.org/yay-bin.git ~/.nocturne_tmp/yay
-cd ~/.nocturne_tmp/yay-bin
+cd ~/.nocturne_tmp/yay
 makepkg -si --noconfirm
 
 cd -

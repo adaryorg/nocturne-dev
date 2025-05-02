@@ -1,34 +1,36 @@
-#!/usr/bin/env bash
 set -e
 
-trap 'echo "Nocturne installation failed. Check if you have at least git installed"' ERR
+trap 'echo "Nocturne installation failed. Make sure you have at least git and less installed."' ERR
 
-if [ ! -f /usr/bin/git ]; then
+essentialsMissing() {
     /usr/bin/cat <<EOF
-$(tput setaf 1)git not detected on your host. 
+Essential software not detected on your host (git and less)
 
-To install git on Ubuntu: sudo apt install git
-To install git on Fedora: sudo dnf install git
-To install git on Arch: sudo pacman -Sy git 
+To install essentials on Ubuntu: sudo apt install git less
+To install essentials on Fedora: sudo dnf install git less
+To install essentials on Arch: sudo pacman -Sy git less
 EOF
     exit 1
+}
+
+if [ ! -f /usr/bin/git ]; then
+    essentialsMissing
+elif [ ! -f /usr/bin/less ]; then
+    essentialsMissing
 else
     echo "Welcome to Nocturne installer."
     echo "This script will remove any old version(s) of Nocturne if present"
-    echo "and will attempt to install the current version. If the folder ~/.nocturne"
-    echo "exists it will be deleted!"
+    echo "If the folder ~/.nocturne exists it will be deleted!"
     echo "If you care for this system at all, make sure to back it up before proceeding."
     read -n 1 -p "Press x to exit or any other key to continue." mainmenuinput
     if [ "$mainmenuinput" = "x" ]; then
         exit 0
     else
-        echo "BUREK"
         if [ -d ~/.nocturne ]; then
             # lets get rid of the old version if it's there
             echo "Deleting ~/.nocturne"
             rm -rf ~/.nocturne
         fi
-        echo "BUREK2"
         echo "Fetching Nocturne installer."
         git clone https://github.com/adaryorg/nocturne-dev.git ~/.nocturne >/dev/null 2>&1
     fi

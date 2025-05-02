@@ -18,16 +18,17 @@ else
     read -n 1 -p "Press x to exit or any other key to continue." mainmenuinput
     if [ "$mainmenuinput" = "x" ]; then
         exit 0
+    else
+        echo "BUREK"
+        if [ -d ~/.nocturne ]; then
+            # lets get rid of the old version if it's there
+            echo "Deleting ~/.nocturne"
+            rm -rf ~/.nocturne
+        fi
+        echo "BUREK2"
+        echo "Fetching Nocturne installer."
+        git clone https://github.com/adaryorg/nocturne-dev.git ~/.nocturne >/dev/null 2>&1
     fi
-    echo "BUREK"
-    if [ -d ~/.nocturne ]; then
-        # lets get rid of the old version if it's there
-        echo "Deleting ~/.nocturne"
-        rm -rf ~/.nocturne
-    fi
-    echo "BUREK2"
-    echo "Fetchihg Nocturne installer."
-    git clone https://github.com/adaryorg/nocturne-dev.git ~/.nocturne >/dev/null 2>&1
 fi
 ${PAGER:-less} ~/.nocturne/disclaimer
 clear

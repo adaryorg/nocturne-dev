@@ -16,6 +16,8 @@ cd -
 rm -rf ~/.nocturne_tmp/yay
 
 # install all shell tools
-sudo pacman -Sy --noconfirm fastfetch github-cli lazydocker lazygit zellij fzf ripgrep bat eza zoxide plocate btop tldr fd
+sudo pacman -Sy --noconfirm fastfetch github-cli lazygit zellij fzf ripgrep bat eza zoxide plocate btop tldr fd
 
 sudo pacman -Sy --noconfirm autoconf bison clang rust openssl readline libyaml readline zlib ncurses libffi gdbm jemalloc imagemagick mupdf mupdf-tools sqlite
+
+yay -Sy --noconfirm lazydocker

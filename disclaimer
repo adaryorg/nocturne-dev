@@ -46,3 +46,20 @@ The choice is yours!
 
 This is your last chance to stop the installation and backup your system. 
 You have been warned!
+
+This istaller will ask you multiple times to provide your password. This is 
+expected behavior since we can't really install software without your password.
+There will also be GNOME popups asking you to enable features. I highly recommend
+enabling them (this is something we can't really automate so...)
+
+If you are an Arch user and you don't trust AUR for software, or don't like 
+using yay as your AUR helper, this is the correct time to bail outi. 
+Nocturne uses AUR and we (major royal we here) the development team like 
+to use yay as our AUR helper so tough luck.
+
+If for any reason you don't want to use GNOME, and want to have Nocturne 
+installed for other desktop environments, please wait for the next release.
+Support for shell only installation, and other desktop environments (KDE, Cosmic,
+<your favorite linux desktop environment>) is on our roadmap. We are working hard
+to have it available soon(tm). In the meanwhile this means that you should exit 
+now (seriously) since only GNOME is supported for now.

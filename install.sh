@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ ! -f $(command -v git) ]; then
+if [ ! -f /usr/bin/git ]; then
     /usr/bin/cat <<EOF
 $(tput setaf 1)git not detected on your host. 
 

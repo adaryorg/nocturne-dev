@@ -31,7 +31,7 @@ else
     fi
 fi
 ${PAGER:-less} ~/.nocturne/disclaimer
-clear
+#clear
 echo "Having read everything from the previously displayed text, are you sure you want to proceed?"
 select yn in "Yes" "No"; do
     case $yn in

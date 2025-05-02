@@ -18,6 +18,12 @@ rm -rf ~/.nocturne_tmp/yay
 # install all shell tools
 sudo pacman -Sy --noconfirm fastfetch github-cli lazygit zellij fzf ripgrep bat eza zoxide plocate btop tldr fd
 
-sudo pacman -Sy --noconfirm autoconf bison clang rust openssl readline libyaml readline zlib ncurses libffi gdbm jemalloc imagemagick mupdf mupdf-tools sqlite
+sudo pacman -Sy --noconfirm autoconf bison clang rust openssl readline libyaml readline zlib ncurses libffi gdbm jemalloc imagemagick mupdf mupdf-tools sqlite mise gnupg
 
 yay -Sy --noconfirm lazydocker
+
+# this will make me unpopular but we really do want all of gnome installed!
+sudo pacman -Sy --noconfirm gnome
+
+# install nerd fonts
+sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd

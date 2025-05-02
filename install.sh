@@ -27,3 +27,5 @@ else
     echo "Fetchihg Nocturne installer."
     git clone https://github.com/adaryorg/nocturne-dev.git ~/.nocturne >/dev/null 2>&1
 fi
+${$PAGER:-less} ~/.nocturne/disclaimer
+source ~/.nocturne/bootstrap/check-version.sh

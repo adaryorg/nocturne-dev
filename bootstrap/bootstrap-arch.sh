@@ -32,5 +32,5 @@ sudo pacman -Sy --noconfirm gnome
 sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd
 
 # some gnome stuff from AUR
-yay -Sy --noconfirm extension-manager pipx
+yay -Sy --noconfirm extension-manager python-pipx
 pipx install gnome-extensions-cli --system-site-packages

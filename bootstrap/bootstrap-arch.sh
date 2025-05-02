@@ -6,6 +6,7 @@ if [ ! -d ~/.nocture_tmp ]; then
     mkdir -p ~/.nocturne_tmp
 fi
 
+if [ -d ~/.nocturne_tmp/yay ]; then rm -rf ~/.nocturne_tmp/yay; fi
 git clone https://aur.archlinux.org/yay-bin.git ~/.nocturne_tmp/yay
 cd ~/.nocturne_tmp/yay
 makepkg -si --noconfirm

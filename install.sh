@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -e
+
+trap 'echo "Nocturne installation failed. Check if you have at least git installed"' ERR
 
 if [ ! -f /usr/bin/git ]; then
     /usr/bin/cat <<EOF

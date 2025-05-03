@@ -9,7 +9,7 @@ else
     echo "oh-my-zsh installer asks you to do!"
     echo "press any key to continue"
     read -r input
-    RUNZSH=no
+    RUNZSH="no"
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 

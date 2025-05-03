@@ -63,3 +63,6 @@ Support for shell only installation, and other desktop environments (KDE, Cosmic
 <your favorite linux desktop environment>) is on our roadmap. We are working hard
 to have it available soon(tm). In the meanwhile this means that you should exit 
 now (seriously) since only GNOME is supported for now.
+
+Your shell will be replaced by zsh, oh-my-zsh will be installed and configured
+for your account. If you don't like zsh for any reason, exit now.

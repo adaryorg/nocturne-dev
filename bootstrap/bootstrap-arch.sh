@@ -2,7 +2,7 @@
 export PATH="$PATH:$HOME/.local/bin"
 
 # bare essentials
-sudo pacman -Sy --noconfirm curl git less base-devel wget zsh python3 tmux htop btop vim nvim tree fzf jq zip unzip
+sudo pacman -Sy --noconfirm curl git less base-devel wget zsh python3 tmux htop btop vim nvim tree fzf jq zip unzip stow
 
 # install yay
 if [ ! -d ~/.nocture_tmp ]; then
@@ -35,3 +35,5 @@ sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascad
 # some gnome stuff from AUR
 yay -Sy --noconfirm extension-manager python-pipx
 pipx install gnome-extensions-cli --system-site-packages
+
+source ~/.nocturne/bootstrap/bootstrap-common.sh

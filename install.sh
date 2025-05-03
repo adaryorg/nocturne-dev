@@ -1,6 +1,31 @@
+#!/bin/sh
 set -e
 
-trap 'echo "Nocturne installation failed. Make sure you have at least git and less installed."' ERR
+# This script should run through curl:
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
+
+detectPlatform() {
+    if [ ! -f /etc/os-release ]
+    then
+        echo "Non Linux (or weird Linux) support not added yet. Please wait for a future release."
+        exit 0
+    fi
+    . /etc/os-release
+    case $ID in
+        "arch")
+            INSTALLER="pacman"
+            # install git and less
+            echo "Detected Arch Linux. Installing git and less"
+            sudo pacman -Sy --noconfirm git less
+            ;;
+        "fedora")
+            INSTALLER="dnf"
+            ;;
+        "ubuntu")
+            INSTALLER="apt"
+            ;;
+    esac
+}
 
 essentialsMissing() {
     /usr/bin/cat <<EOF
@@ -13,6 +38,8 @@ EOF
     exit 1
 }
 
+detectPlatform
+
 if [ ! -f /usr/bin/git ]; then
     essentialsMissing
 elif [ ! -f /usr/bin/less ]; then
@@ -22,7 +49,8 @@ else
     echo "This script will remove any old version(s) of Nocturne if present"
     echo "If the folder ~/.nocturne exists it will be deleted!"
     echo "If you care for this system at all, make sure to back it up before proceeding."
-    read -n 1 -p "Press x to exit or any other key to continue." mainmenuinput
+    echo "Press x to exit or any other key to continue." mainmenuinput
+    read -r mainmenuinput
     if [ "$mainmenuinput" = "x" ]; then
         exit 0
     else

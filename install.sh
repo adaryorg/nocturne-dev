@@ -40,6 +40,56 @@ else
     }
 fi
 
+supports_hyperlinks() {
+  # $FORCE_HYPERLINK must be set and be non-zero (this acts as a logic bypass)
+  if [ -n "$FORCE_HYPERLINK" ]; then
+    [ "$FORCE_HYPERLINK" != 0 ]
+    return $?
+  fi
+
+  # If stdout is not a tty, it doesn't support hyperlinks
+  is_tty || return 1
+
+  # DomTerm terminal emulator (domterm.org)
+  if [ -n "$DOMTERM" ]; then
+    return 0
+  fi
+
+  # VTE-based terminals above v0.50 (Gnome Terminal, Guake, ROXTerm, etc)
+  if [ -n "$VTE_VERSION" ]; then
+    [ $VTE_VERSION -ge 5000 ]
+    return $?
+  fi
+
+  # If $TERM_PROGRAM is set, these terminals support hyperlinks
+  case "$TERM_PROGRAM" in
+  Hyper|iTerm.app|terminology|WezTerm|vscode) return 0 ;;
+  esac
+
+  # These termcap entries support hyperlinks
+  case "$TERM" in
+  xterm-kitty|alacritty|alacritty-direct) return 0 ;;
+  esac
+
+  # xfce4-terminal supports hyperlinks
+  if [ "$COLORTERM" = "xfce4-terminal" ]; then
+    return 0
+  fi
+
+  # Windows Terminal also supports hyperlinks
+  if [ -n "$WT_SESSION" ]; then
+    return 0
+  fi
+
+  # Konsole supports hyperlinks, but it's an opt-in setting that can't be detected
+  # https://github.com/ohmyzsh/ohmyzsh/issues/10964
+  # if [ -n "$KONSOLE_VERSION" ]; then
+  #   return 0
+  # fi
+
+  return 1
+}
+
 # The following functions were mostly lifted from oh-my-zsh installer which is
 # Copyright (c) 2009-2025 Robby Russell and contributors (https://github.com/ohmyzsh/ohmyzsh/contributors)
 #
@@ -180,7 +230,7 @@ detectPlatform() {
             INSTALLER="pacman"
             # install git and less
             fmt_info "Detected Arch based system. If requested, enter your password to install git and less."
-            sudo pacman -Sy --noconfirm git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            sudo pacman -Sy --noconfirm git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
             spinner $!
             ;;
         "fedora")
@@ -190,7 +240,7 @@ detectPlatform() {
                 exit 1
             fi
             fmt_info "Detected rpm based system. If requested, enter your password to install git and less."
-            sudo dnf install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            sudo dnf install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
             spinner $!
             INSTALLER="dnf"
             ;;
@@ -200,7 +250,7 @@ detectPlatform() {
                 exit 1
             fi
             fmt_info "Detected deb based system. If requested, enter your password to install git and less."
-            sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
             spinner $!
             INSTALLER="apt"
             ;;

@@ -1,10 +1,172 @@
 #!/bin/sh
+
+# SPDX-FileCopyrightText: 2025 Yuval Adar <adary@adary.org>
+# SPDX-License-Identifier: MIT
+
 set -e
+
+cleanup() {
+    tput cnorm
+}
+
+trap cleanup EXIT
+
+spinner() {
+    pid=$1 
+    s='⣾⣽⣻⢿⡿⣟⣯⣷'
+    ch=3
+
+    i=0
+    tput civis
+    while kill -0 $pid 2>/dev/null
+    do
+        i=$(( (i+$ch) % ${#s} ))
+            printf "\r${s:$i:1}"
+            sleep .2
+        done
+        tput cnorm
+        printf '\n'
+    }
+
+# check for tty
+
+if [ -t 1 ]; then
+    is_tty() {
+        true
+    }
+else
+    is_tty() {
+        false
+    }
+fi
+
+# The following functions were mostly lifted from oh-my-zsh installer which is
+# Copyright (c) 2009-2025 Robby Russell and contributors (https://github.com/ohmyzsh/ohmyzsh/contributors)
+#
+# Adapted for Nocturne installer by Yuval Adar (adary@adary.org)
+
+supports_truecolor() {
+    case "$COLORTERM" in
+        truecolor | 24bit) return 0 ;;
+    esac
+
+    case "$TERM" in
+        iterm | \
+            tmux-truecolor | \
+            linux-truecolor | \
+            xterm-truecolor | \
+            screen-truecolor) return 0 ;;
+        esac
+
+        return 1
+    }
+
+fmt_link() {
+    # $1: text, $2: url, $3: fallback mode
+    if supports_hyperlinks; then
+        printf '\033]8;;%s\033\\%s\033]8;;\033\\\n' "$2" "$1"
+        return
+    fi
+
+    case "$3" in
+        --text) printf '%s\n' "$1" ;;
+        --url | *) fmt_underline "$2" ;;
+    esac
+}
+
+fmt_underline() {
+    is_tty && printf '\033[4m%s\033[24m\n' "$*" || printf '%s\n' "$*"
+}
+
+# shellcheck disable=SC2016 # backtick in single-quote
+fmt_code() {
+    is_tty && printf '`\033[2m%s\033[22m`\n' "$*" || printf '`%s`\n' "$*"
+}
+
+fmt_error() {
+    printf '%sError: %s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
+}
+
+fmt_info() {
+    printf '%sError: %s%s\n' "${FMT_BOLD}${FMT_BLUE}" "$*" "$FMT_RESET" >&2
+}
+
+setup_color() {
+    # Only use colors if connected to a terminal
+    if ! is_tty; then
+        FMT_RAINBOW=""
+        FMT_RED=""
+        FMT_GREEN=""
+        FMT_YELLOW=""
+        FMT_BLUE=""
+        FMT_BOLD=""
+        FMT_RESET=""
+        return
+    fi
+
+    if supports_truecolor; then
+        FMT_RAINBOW="
+        $(printf '\033[38;2;255;0;0m')
+        $(printf '\033[38;2;255;97;0m')
+        $(printf '\033[38;2;247;255;0m')
+        $(printf '\033[38;2;0;255;30m')
+        $(printf '\033[38;2;77;0;255m')
+        $(printf '\033[38;2;168;0;255m')
+        $(printf '\033[38;2;245;0;172m')
+        $(printf '\033[38;2;51;255;249m')
+        "
+    else
+        FMT_RAINBOW="
+        $(printf '\033[38;5;196m')
+        $(printf '\033[38;5;202m')
+        $(printf '\033[38;5;226m')
+        $(printf '\033[38;5;082m')
+        $(printf '\033[38;5;021m')
+        $(printf '\033[38;5;093m')
+        $(printf '\033[38;5;163m')
+        $(printf '\033[38;5;051m')
+        "
+    fi
+
+    FMT_RED=$(printf '\033[31m')
+    FMT_GREEN=$(printf '\033[32m')
+    FMT_YELLOW=$(printf '\033[33m')
+    FMT_BLUE=$(printf '\033[34m')
+    FMT_BOLD=$(printf '\033[1m')
+    FMT_RESET=$(printf '\033[0m')
+}
+
+print_header() {
+    if ! supports_truecolor; then
+        printf 'Welcome to\n'
+        printf '\n'
+        printf '%s███    ██%s  ██████  %s ██████ %s████████ %s██    ██ %s██████  %s███    ██ %s███████%s\n' $FMT_RAINBOW $FMT_RESET
+        printf '%s████   ██%s ██    ██ %s██      %s   ██    %s██    ██ %s██   ██ %s████   ██ %s██     %s\n' $FMT_RAINBOW $FMT_RESET
+        printf '%s██ ██  ██%s ██    ██ %s██      %s   ██    %s██    ██ %s██████  %s██ ██  ██ %s█████  %s\n' $FMT_RAINBOW $FMT_RESET
+        printf '%s██  ██ ██%s ██    ██ %s██      %s   ██    %s██    ██ %s██   ██ %s██  ██ ██ %s██     %s\n' $FMT_RAINBOW $FMT_RESET
+        printf '%s██   ████%s  ██████  %s ██████ %s   ██    %s ██████  %s██   ██ %s██   ████ %s███████%s\n' $FMT_RAINBOW $FMT_RESET
+        printf '\n'
+        printf 'Buckle up and enjoy the ride!\n'
+    else
+        echo "
+        Welcome to
+
+        ███    ██  ██████   ██████ ████████ ██    ██ ██████  ███    ██ ███████
+        ████   ██ ██    ██ ██         ██    ██    ██ ██   ██ ████   ██ ██
+        ██ ██  ██ ██    ██ ██         ██    ██    ██ ██████  ██ ██  ██ █████
+        ██  ██ ██ ██    ██ ██         ██    ██    ██ ██   ██ ██  ██ ██ ██
+        ██   ████  ██████   ██████    ██     ██████  ██   ██ ██   ████ ███████
+
+        Buckle up and enjoy the ride!
+        " | lolcat
+    fi
+}
 
 # This script should run through curl:
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
 
-ostype=$(uname)
+# set some very important variables and stuffs
+
 
 detectPlatform() {
     if [ ! -f /etc/os-release ]
@@ -18,7 +180,7 @@ detectPlatform() {
             INSTALLER="pacman"
             # install git and less
             echo "Detected Arch based system. If requested, enter your password to install git and less."
-            sudo pacman -Sy --noconfirm git less unzip
+            sudo pacman -Sy --noconfirm git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
             ;;
         "fedora")
             echo "Fedora detected"
@@ -27,7 +189,7 @@ detectPlatform() {
                 exit 1
             fi
             echo "Detected rpm based system. If requested, enter your password to install git and less."
-            sudo dnf install -y git less unzip
+            sudo dnf install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
             INSTALLER="dnf"
             ;;
         "ubuntu")
@@ -36,7 +198,7 @@ detectPlatform() {
                 exit 1
             fi
             echo "Detected deb based system. If requested, enter your password to install git and less."
-            sudo apt install -y git less unzip
+            sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
             INSTALLER="apt"
             ;;
         *)
@@ -46,36 +208,52 @@ detectPlatform() {
     esac
 }
 
-detectPlatform
+# start the main logic
+ostype=$(uname)
+USER=${USER:-$(id -u -n)}
+HOME="${HOME:-$(getent passwd $USER 2>/dev/null | cut -d: -f6)}"
+HOME="${HOME:-$(eval echo ~$USER)}"
+NOCTURNE=${NOCTURNE:-"$HOME/.local/share/nocturne"}
+NOCTURNE_GIT=${NOCTURNE_GIT:-"$HOME/.nocturne"}
+NOCTURNE_DOT=${NOCTURNE_DOT:-"$HOME/.nocturne_dotfiles"}
+NOCTURNE_LOG=${NOCTURNE_LOG:-"$NOCTURNE/log"}
+if [ ! -d $NOCTURNE_LOG ]
+then
+    mkdir -p $NOCTURNE_LOG
+fi
 
-echo "Welcome to Nocturne installer."
-echo "This script will remove any old version(s) of Nocturne if present"
-echo "If the folder ~/.nocturne exists it will be deleted!"
-echo "If you care for this system at all, make sure to back it up before proceeding."
-echo ""
-echo "Press x to exit or any other key to continue." 
+detectPlatform
+print_header
+if [ -d $NOCTURNE_GIT ]
+then
+    fmt_error "Old version of Nocturne detected at $NOCTURNE_GIT"
+    fmt_error "Proceeding with installation will delete this folder!"
+fi
+
+fmt_info "Press x to exit or any other key to continue."
 read -r input
 
 if [ "$input" = "x" ]; then
     exit 0
 else
-    if [ -d ~/.nocturne ]; then
+    if [ -d $NOCTURNE_GIT ]; then
         # lets get rid of the old version if it's there
-        echo "Deleting ~/.nocturne"
+        fmt_error "Deleting $NOCTURNE_GIT"
         rm -rf ~/.nocturne
     fi
-    echo "Fetching Nocturne installer."
-    git clone https://github.com/adaryorg/nocturne-dev.git ~/.nocturne >/dev/null 2>&1
+    fmt_info "Fetching Nocturne installer."
+    git clone https://github.com/adaryorg/nocturne-dev.git $NOCTURNE_GIT >/dev/null 2>&1
 fi
 
 # show the disclaimer!
-${PAGER:-less} ~/.nocturne/disclaimer
+${PAGER:-less} $NOCTURNE_GIT/disclaimer
 
-echo "Having read everything from the previously displayed text, are you sure you want to proceed?"
+fmt_info "Having read everything from the previously displayed text, are you sure you want to proceed?"
+fmt_info "This is not the last chance to bail about but still think about it!"
 select yn in "Yes" "No"; do
     case $yn in
-    Yes) break ;;
-    No) exit ;;
+        Yes) break ;;
+        No) exit ;;
     esac
 done
 

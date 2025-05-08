@@ -10,6 +10,7 @@ else
     echo "press any key to continue"
     read -r input
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sudo -k chsh -s /usr/bin/zsh "$USER"
 fi
 
 #installing nocturne dotfiles

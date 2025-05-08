@@ -19,7 +19,7 @@ cd $NOCTURNE/tmp/yay
 makepkg -si --noconfirm >>$NOCTURNE_LOG/bootstrap.log 2>&1 &
 spinner $!
 
-cd -
+cd - >>$NOCTURNE_LOG/bootstrap.log 2>&1
 # clean up
 rm -rf $NOCTURNE/tmp/yay
 
@@ -34,7 +34,6 @@ spinner $!
 
 fmt_info "Installing the best tool in the world (get ready to enter password)"
 yay -Sy --noconfirm lazydocker >>$NOCTURNE_LOG/bootstrap.log 2>&1 &
-spinner $!
 
 # this will make me unpopular but we really do want all of gnome installed!
 fmt_info "Installing GNOME packages ..."
@@ -49,7 +48,6 @@ spinner $!
 # some gnome stuff from AUR
 fmt_info "Installing more GNOME stuffs (it might ask for password again...)"
 yay -Sy --noconfirm extension-manager python-pipx >>$NOCTURNE_LOG/bootstrap.log 2>&1 &
-spinner $!
 pipx install gnome-extensions-cli --system-site-packages >>$NOCTURNE_LOG/bootstrap.log 2>&1 &
 spinner $!
 

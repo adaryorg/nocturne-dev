@@ -2,38 +2,54 @@
 export PATH="$PATH:$HOME/.local/bin"
 
 # bare essentials
-sudo pacman -Sy --noconfirm curl git less base-devel wget zsh python3 tmux htop btop vim nvim tree fzf jq zip unzip stow
+fmt_info "Installing essentials. Full installation log will be avaiable at:"
+fmt_link "$NOCTURNE_LOG/bootstrap.log"
+sudo pacman -Sy --noconfirm curl git less base-devel wget zsh python3 tmux htop btop vim nvim tree fzf jq zip unzip stow >$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
 # install yay
-if [ ! -d ~/.nocture_tmp ]; then
-    mkdir -p ~/.nocturne_tmp
+if [ ! -d $NOCTURNE/tmp ]; then
+    mkdir -p $NOCTURNE/tmp
 fi
 
-if [ -d ~/.nocturne_tmp/yay ]; then rm -rf ~/.nocturne_tmp/yay; fi
+if [ -d $NOCTURNE/tmp/yay ]; then rm -rf $NOCTURNE/tmp/yay; fi
 
-git clone https://aur.archlinux.org/yay-bin.git ~/.nocturne_tmp/yay
-cd ~/.nocturne_tmp/yay
+git clone https://aur.archlinux.org/yay-bin.git $NOCTURNE/tmp/yay
+cd $NOCTURNE/tmp/yay
 makepkg -si --noconfirm
 
 cd -
 # clean up
-rm -rf ~/.nocturne_tmp/yay
+rm -rf $NOCTURNE/tmp/yay
 
 # install all shell tools
-sudo pacman -Sy --noconfirm fastfetch github-cli lazygit zellij fzf ripgrep bat eza zoxide plocate btop tldr fd starship atuin thefuck
+fmt_info "Installing shell tools"
+sudo pacman -Sy --noconfirm fastfetch github-cli lazygit zellij fzf ripgrep bat eza zoxide plocate btop tldr fd starship atuin thefuck >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
-sudo pacman -Sy --noconfirm autoconf bison clang rust openssl readline libyaml readline zlib ncurses libffi gdbm jemalloc imagemagick mupdf mupdf-tools sqlite mise gnupg gum
+fmt_info "Installing stuff(tm)"
+sudo pacman -Sy --noconfirm autoconf bison clang rust openssl readline libyaml readline zlib ncurses libffi gdbm jemalloc imagemagick mupdf mupdf-tools sqlite mise gnupg gum >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
-yay -Sy --noconfirm lazydocker
+fmt_info "Installing the best tool in the world (get ready to enter password)"
+yay -Sy --noconfirm lazydocker >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
 # this will make me unpopular but we really do want all of gnome installed!
-sudo pacman -Sy --noconfirm gnome
+fmt_info "Installing GNOME packages ..."
+sudo pacman -Sy --noconfirm gnome >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
 # install nerd fonts
-sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd
+fmt_info "Installing nerd fonts for all ya nerds out there!"
+sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
 # some gnome stuff from AUR
-yay -Sy --noconfirm extension-manager python-pipx
-pipx install gnome-extensions-cli --system-site-packages
+fmt_info "Installing more GNOME stuffs (it might ask for password again...)"
+yay -Sy --noconfirm extension-manager python-pipx >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
+pipx install gnome-extensions-cli --system-site-packages >>$NOCTURNE_LOG/bootstrap.log
+spinner $!
 
 source ~/.nocturne/bootstrap/bootstrap-common.sh

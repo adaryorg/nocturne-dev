@@ -179,26 +179,29 @@ detectPlatform() {
         "arch")
             INSTALLER="pacman"
             # install git and less
-            echo "Detected Arch based system. If requested, enter your password to install git and less."
+            fmt_info "Detected Arch based system. If requested, enter your password to install git and less."
             sudo pacman -Sy --noconfirm git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            spinner $!
             ;;
         "fedora")
             echo "Fedora detected"
             if [ $(echo "$VERSION_ID >= 41" | bc) != 1 ]; then
-                echo "Fedora versions older than 41 are not supported!"
+                fmt_error "Fedora versions older than 41 are not supported!"
                 exit 1
             fi
-            echo "Detected rpm based system. If requested, enter your password to install git and less."
+            fmt_info "Detected rpm based system. If requested, enter your password to install git and less."
             sudo dnf install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            spinner $!
             INSTALLER="dnf"
             ;;
         "ubuntu")
             if [ $(echo "$VERSION_ID >= 24.04" | bc) != 1 ]; then
-                echo "Ubuntu versions older than 24.04 are not supported!"
+                fmt_error "Ubuntu versions older than 24.04 are not supported!"
                 exit 1
             fi
-            echo "Detected deb based system. If requested, enter your password to install git and less."
+            fmt_info "Detected deb based system. If requested, enter your password to install git and less."
             sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            spinner $!
             INSTALLER="apt"
             ;;
         *)

@@ -84,11 +84,11 @@ fmt_code() {
 }
 
 fmt_error() {
-    printf '%sError: %s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
+    printf '%s%s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
 }
 
 fmt_info() {
-    printf '%sError: %s%s\n' "${FMT_BOLD}${FMT_BLUE}" "$*" "$FMT_RESET" >&2
+    printf '%s%s%s\n' "${FMT_BOLD}${FMT_BLUE}" "$*" "$FMT_RESET" >&2
 }
 
 setup_color() {
@@ -222,8 +222,10 @@ then
     mkdir -p $NOCTURNE_LOG
 fi
 
+setup_color
 detectPlatform
 print_header
+
 if [ -d $NOCTURNE_GIT ]
 then
     fmt_error "Old version of Nocturne detected at $NOCTURNE_GIT"

@@ -212,7 +212,7 @@ detectPlatform() {
         INSTALLER="pacman"
         # install git and less
         fmt_info "Detected Arch based system. Installing basic prerequisites."
-        sudo pacman -Sy --noconfirm gum git less unzip lolcat >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        sudo pacman -Sy --noconfirm gum git less unzip lolcat >>/dev/null 2>&1
         ;;
     "fedora")
         echo "Fedora detected"
@@ -221,7 +221,7 @@ detectPlatform() {
             exit 1
         fi
         fmt_info "Detected rpm based system. Installing basic prerequisites."
-        sudo dnf install -y gum git less unzip lolcat >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        sudo dnf install -y gum git less unzip lolcat >>/dev/null 2>&1
         INSTALLER="dnf"
         ;;
     "ubuntu")
@@ -230,11 +230,11 @@ detectPlatform() {
             exit 1
         fi
         fmt_info "Detected deb based system.  Installing basic prerequisites."
-        sudo apt install -y git less unzip lolcat >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        sudo apt install -y git less unzip lolcat >>/dev/null 2>&1
         if [ $(echo "$VERSION_ID > 24.04" | bc) != 1 ]; then
-            install_gum_ubuntu >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            install_gum_ubuntu >>/dev/null 2>&1
         else
-            sudo apt -y install gum >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            sudo apt -y install gum >>/dev/null 2>&1
         fi
         INSTALLER="apt"
         ;;

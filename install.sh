@@ -8,7 +8,6 @@
 #
 set -e
 
-
 # The following functions were mostly lifted from oh-my-zsh installer which is
 # Copyright (c) 2009-2025 Robby Russell and contributors (https://github.com/ohmyzsh/ohmyzsh/contributors)
 #
@@ -50,12 +49,12 @@ supports_hyperlinks() {
     # If $TERM_PROGRAM is set, these terminals support hyperlinks
     # modified from original to add ghostty
     case "$TERM_PROGRAM" in
-        Hyper|iTerm.app|terminology|WezTerm|ghostty|vscode) return 0 ;;
+    Hyper | iTerm.app | terminology | WezTerm | ghostty | vscode) return 0 ;;
     esac
 
     # These termcap entries support hyperlinks
     case "$TERM" in
-        xterm-kitty|alacritty|alacritty-direct) return 0 ;;
+    xterm-kitty | alacritty | alacritty-direct) return 0 ;;
     esac
 
     # xfce4-terminal supports hyperlinks
@@ -73,19 +72,19 @@ supports_hyperlinks() {
 
 supports_truecolor() {
     case "$COLORTERM" in
-        truecolor | 24bit) return 0 ;;
+    truecolor | 24bit) return 0 ;;
     esac
 
     case "$TERM" in
-        iterm | \
-            tmux-truecolor | \
-            linux-truecolor | \
-            xterm-truecolor | \
-            screen-truecolor) return 0 ;;
-        esac
+    iterm | \
+        tmux-truecolor | \
+        linux-truecolor | \
+        xterm-truecolor | \
+        screen-truecolor) return 0 ;;
+    esac
 
-        return 1
-    }
+    return 1
+}
 
 fmt_link() {
     # $1: text, $2: url, $3: fallback mode
@@ -95,8 +94,8 @@ fmt_link() {
     fi
 
     case "$3" in
-        --text) printf '%s\n' "$1" ;;
-        --url | *) fmt_underline "$2" ;;
+    --text) printf '%s\n' "$1" ;;
+    --url | *) fmt_underline "$2" ;;
     esac
 }
 
@@ -200,50 +199,49 @@ install_gum_ubuntu() {
     wget -qO gum.deb "https://github.com/charmbracelet/gum/releases/download/v${GUM_VERSION}/gum_${GUM_VERSION}_amd64.deb"
     sudo apt-get install -y ./gum.deb
     rm gum.deb
-    cd -    
+    cd -
 }
 detectPlatform() {
-    if [ ! -f /etc/os-release ]
-    then
+    if [ ! -f /etc/os-release ]; then
         fmt_error "Non Linux (or weird Linux) support not added yet. Please wait for a future release."
         exit 0
     fi
     . /etc/os-release
     case $ID in
-        "arch")
-            INSTALLER="pacman"
-            # install git and less
-            fmt_info "Detected Arch based system. Installing basic prerequisites."
-            sudo pacman -Sy --noconfirm gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
-            ;;
-        "fedora")
-            echo "Fedora detected"
-            if [ $(echo "$VERSION_ID > 41" | bc) != 1 ]; then
-                fmt_error "Fedora versions older than 42 are not supported!"
-                exit 1
-            fi
-            fmt_info "Detected rpm based system. Installing basic prerequisites."
-            sudo dnf install -y gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
-            INSTALLER="dnf"
-            ;;
-        "ubuntu")
-            if [ $(echo "$VERSION_ID >= 24.04" | bc) != 1 ]; then
-                fmt_error "Ubuntu versions older than 24.04 are not supported!"
-                exit 1
-            fi
-            fmt_info "Detected deb based system.  Installing basic prerequisites."
-            sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
-            if [ $(echo "$VERSION_ID > 24.04" |bc) != 1  ]; then
-                install_gum_ubuntu >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
-            else
-                sudo apt -y install gum >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
-            fi
-            INSTALLER="apt"
-            ;;
-        *)
-            fmt_error "Unknown Linux distro detected. Support might be added in the future!"
-            exit 0
-            ;;
+    "arch")
+        INSTALLER="pacman"
+        # install git and less
+        fmt_info "Detected Arch based system. Installing basic prerequisites."
+        sudo pacman -Sy --noconfirm gum git less unzip lolcat >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        ;;
+    "fedora")
+        echo "Fedora detected"
+        if [ $(echo "$VERSION_ID > 41" | bc) != 1 ]; then
+            fmt_error "Fedora versions older than 42 are not supported!"
+            exit 1
+        fi
+        fmt_info "Detected rpm based system. Installing basic prerequisites."
+        sudo dnf install -y gum git less unzip lolcat >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        INSTALLER="dnf"
+        ;;
+    "ubuntu")
+        if [ $(echo "$VERSION_ID >= 24.04" | bc) != 1 ]; then
+            fmt_error "Ubuntu versions older than 24.04 are not supported!"
+            exit 1
+        fi
+        fmt_info "Detected deb based system.  Installing basic prerequisites."
+        sudo apt install -y git less unzip lolcat >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        if [ $(echo "$VERSION_ID > 24.04" | bc) != 1 ]; then
+            install_gum_ubuntu >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        else
+            sudo apt -y install gum >>$NOCTURNE_LOG/pre-bootstrap.log 2>&1
+        fi
+        INSTALLER="apt"
+        ;;
+    *)
+        fmt_error "Unknown Linux distro detected. Support might be added in the future!"
+        exit 0
+        ;;
     esac
 }
 
@@ -256,8 +254,7 @@ NOCTURNE=${NOCTURNE:-"$HOME/.local/share/nocturne"}
 NOCTURNE_GIT=${NOCTURNE_GIT:-"$HOME/.nocturne"}
 NOCTURNE_DOT=${NOCTURNE_DOT:-"$HOME/.nocturne_dotfiles"}
 NOCTURNE_LOG=${NOCTURNE_LOG:-"$NOCTURNE/log"}
-if [ ! -d $NOCTURNE_LOG ]
-then
+if [ ! -d $NOCTURNE_LOG ]; then
     mkdir -p $NOCTURNE_LOG
 fi
 
@@ -265,8 +262,7 @@ setup_color
 detectPlatform
 print_header
 
-if [ -d $NOCTURNE_GIT ]
-then
+if [ -d $NOCTURNE_GIT ]; then
     fmt_warning "Old version of Nocturne detected at $NOCTURNE_GIT"
     fmt_warning "Proceeding with installation will delete this folder!"
 fi
@@ -291,21 +287,20 @@ ${PAGER:-less} $NOCTURNE_GIT/disclaimer
 
 fmt_info "Having read everything from the previously displayed text, are you sure you want to proceed?"
 fmt_info "This is not the last chance to bail about but still think about it!"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes) break ;;
-        No) exit ;;
-    esac
-done
+yn=$(gum confirm "Do you want to proceed with Nocturne installation?")
+case $yn in
+0) break ;;
+1) exit ;;
+esac
 
 case $INSTALLER in
-    "apt")
-        source ~/.nocturne/bootstrap/bootstrap-ubuntu.sh
-        ;;
-    "dnf")
-        source ~/.nocturne/bootstrap/bootstrap-fedora.sh
-        ;;
-    "pacman")
-        source ~/.nocturne/bootstrap/bootstrap-arch.sh
-        ;;
+"apt")
+    source ~/.nocturne/bootstrap/bootstrap-ubuntu.sh
+    ;;
+"dnf")
+    source ~/.nocturne/bootstrap/bootstrap-fedora.sh
+    ;;
+"pacman")
+    source ~/.nocturne/bootstrap/bootstrap-arch.sh
+    ;;
 esac

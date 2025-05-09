@@ -8,30 +8,6 @@
 #
 set -e
 
-# spinner disables cursor and this trap will re-enable it if exited in the middle
-
-cleanup() {
-    tput cnorm
-}
-
-trap cleanup EXIT
-
-spinner() {
-    pid=$1 
-    s='⣾⣽⣻⢿⡿⣟⣯⣷'
-    ch=3
-
-    i=0
-    tput civis
-    while kill -0 $pid 2>/dev/null
-    do
-        i=$(( (i+$ch) % ${#s} ))
-            printf "\r${s:$i:1}"
-            sleep .2
-        done
-        tput cnorm
-        printf '\n'
-    }
 
 # The following functions were mostly lifted from oh-my-zsh installer which is
 # Copyright (c) 2009-2025 Robby Russell and contributors (https://github.com/ohmyzsh/ohmyzsh/contributors)
@@ -51,48 +27,48 @@ else
 fi
 
 supports_hyperlinks() {
-  # $FORCE_HYPERLINK must be set and be non-zero (this acts as a logic bypass)
-  if [ -n "$FORCE_HYPERLINK" ]; then
-    [ "$FORCE_HYPERLINK" != 0 ]
-    return $?
-  fi
+    # $FORCE_HYPERLINK must be set and be non-zero (this acts as a logic bypass)
+    if [ -n "$FORCE_HYPERLINK" ]; then
+        [ "$FORCE_HYPERLINK" != 0 ]
+        return $?
+    fi
 
-  # If stdout is not a tty, it doesn't support hyperlinks
-  is_tty || return 1
+    # If stdout is not a tty, it doesn't support hyperlinks
+    is_tty || return 1
 
-  # DomTerm terminal emulator (domterm.org)
-  if [ -n "$DOMTERM" ]; then
-    return 0
-  fi
+    # DomTerm terminal emulator (domterm.org)
+    if [ -n "$DOMTERM" ]; then
+        return 0
+    fi
 
-  # VTE-based terminals above v0.50 (Gnome Terminal, Guake, ROXTerm, etc)
-  if [ -n "$VTE_VERSION" ]; then
-    [ $VTE_VERSION -ge 5000 ]
-    return $?
-  fi
+    # VTE-based terminals above v0.50 (Gnome Terminal, Guake, ROXTerm, etc)
+    if [ -n "$VTE_VERSION" ]; then
+        [ $VTE_VERSION -ge 5000 ]
+        return $?
+    fi
 
-  # If $TERM_PROGRAM is set, these terminals support hyperlinks
-  # modified from original to add ghostty
-  case "$TERM_PROGRAM" in
-  Hyper|iTerm.app|terminology|WezTerm|ghostty|vscode) return 0 ;;
-  esac
+    # If $TERM_PROGRAM is set, these terminals support hyperlinks
+    # modified from original to add ghostty
+    case "$TERM_PROGRAM" in
+        Hyper|iTerm.app|terminology|WezTerm|ghostty|vscode) return 0 ;;
+    esac
 
-  # These termcap entries support hyperlinks
-  case "$TERM" in
-  xterm-kitty|alacritty|alacritty-direct) return 0 ;;
-  esac
+    # These termcap entries support hyperlinks
+    case "$TERM" in
+        xterm-kitty|alacritty|alacritty-direct) return 0 ;;
+    esac
 
-  # xfce4-terminal supports hyperlinks
-  if [ "$COLORTERM" = "xfce4-terminal" ]; then
-    return 0
-  fi
+    # xfce4-terminal supports hyperlinks
+    if [ "$COLORTERM" = "xfce4-terminal" ]; then
+        return 0
+    fi
 
-  # Windows Terminal also supports hyperlinks
-  if [ -n "$WT_SESSION" ]; then
-    return 0
-  fi
+    # Windows Terminal also supports hyperlinks
+    if [ -n "$WT_SESSION" ]; then
+        return 0
+    fi
 
-  return 1
+    return 1
 }
 
 supports_truecolor() {
@@ -218,7 +194,14 @@ print_header() {
 
 # kinda important to detect the platform and make sure bare necessities are present
 # this information will be passed on to the rest of install scripts
-
+install_gum_ubuntu() {
+    cd /tmp
+    GUM_VERSION="0.16.0" # Use known good version
+    wget -qO gum.deb "https://github.com/charmbracelet/gum/releases/download/v${GUM_VERSION}/gum_${GUM_VERSION}_amd64.deb"
+    sudo apt-get install -y ./gum.deb
+    rm gum.deb
+    cd -    
+}
 detectPlatform() {
     if [ ! -f /etc/os-release ]
     then
@@ -230,19 +213,17 @@ detectPlatform() {
         "arch")
             INSTALLER="pacman"
             # install git and less
-            fmt_info "Detected Arch based system. If requested, enter your password to install git and less."
-            sudo pacman -Sy --noconfirm git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
-            spinner $!
+            fmt_info "Detected Arch based system. Installing basic prerequisites."
+            sudo pacman -Sy --noconfirm gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
             ;;
         "fedora")
             echo "Fedora detected"
-            if [ $(echo "$VERSION_ID >= 41" | bc) != 1 ]; then
-                fmt_error "Fedora versions older than 41 are not supported!"
+            if [ $(echo "$VERSION_ID > 41" | bc) != 1 ]; then
+                fmt_error "Fedora versions older than 42 are not supported!"
                 exit 1
             fi
-            fmt_info "Detected rpm based system. If requested, enter your password to install git and less."
-            sudo dnf install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
-            spinner $!
+            fmt_info "Detected rpm based system. Installing basic prerequisites."
+            sudo dnf install -y gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
             INSTALLER="dnf"
             ;;
         "ubuntu")
@@ -250,9 +231,13 @@ detectPlatform() {
                 fmt_error "Ubuntu versions older than 24.04 are not supported!"
                 exit 1
             fi
-            fmt_info "Detected deb based system. If requested, enter your password to install git and less."
+            fmt_info "Detected deb based system.  Installing basic prerequisites."
             sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
-            spinner $!
+            if [ $(echo "$VERSION_ID > 24.04" |bc) != 1  ]; then
+                install_gum_ubuntu >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
+            else
+                sudo apt -y install gum >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
+            fi
             INSTALLER="apt"
             ;;
         *)

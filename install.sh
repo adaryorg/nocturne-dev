@@ -6,7 +6,7 @@
 # This script should run through curl:
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
 #
-#set -e
+set -e
 
 
 # The following functions were mostly lifted from oh-my-zsh installer which is
@@ -214,7 +214,7 @@ detectPlatform() {
             INSTALLER="pacman"
             # install git and less
             fmt_info "Detected Arch based system. Installing basic prerequisites."
-            sudo pacman -Sy --noconfirm gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
+            sudo pacman -Sy --noconfirm gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
             ;;
         "fedora")
             echo "Fedora detected"
@@ -223,7 +223,7 @@ detectPlatform() {
                 exit 1
             fi
             fmt_info "Detected rpm based system. Installing basic prerequisites."
-            sudo dnf install -y gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
+            sudo dnf install -y gum git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
             INSTALLER="dnf"
             ;;
         "ubuntu")
@@ -232,7 +232,7 @@ detectPlatform() {
                 exit 1
             fi
             fmt_info "Detected deb based system.  Installing basic prerequisites."
-            sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 &
+            sudo apt install -y git less unzip lolcat >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1 
             if [ $(echo "$VERSION_ID > 24.04" |bc) != 1  ]; then
                 install_gum_ubuntu >> $NOCTURNE_LOG/pre-bootstrap.log 2>&1
             else

@@ -112,18 +112,6 @@ fmt_code() {
     is_tty && printf '`\033[2m%s\033[22m`\n' "$*" || printf '`%s`\n' "$*"
 }
 
-fmt_warning() {
-    printf '%s Warning: %s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
-}
-
-fmt_error() {
-    printf '%s Error: %s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
-}
-
-fmt_info() {
-    printf '%s Info: %s%s\n' "${FMT_BOLD}${FMT_BLUE}" "$*" "$FMT_RESET" >&2
-}
-
 setup_color() {
     # Only use colors if connected to a terminal
     if ! is_tty; then
@@ -134,6 +122,9 @@ setup_color() {
         FMT_BLUE=""
         FMT_BOLD=""
         FMT_RESET=""
+        GUM_ERR=""
+        GUM_INFO=""
+        GUM_WARN=""
         return
     fi
 
@@ -167,6 +158,9 @@ setup_color() {
     FMT_BLUE=$(printf '\033[34m')
     FMT_BOLD=$(printf '\033[1m')
     FMT_RESET=$(printf '\033[0m')
+    GUM_ERR="--foreground=196"
+    GUM_INFO="--foreground=14"
+    GUM_WARN="--foreground=11"
 }
 
 print_header() {
@@ -207,7 +201,7 @@ install_gum_ubuntu() {
 }
 detectPlatform() {
     if [ ! -f /etc/os-release ]; then
-        fmt_error "Non Linux (or weird Linux) support not added yet. Please wait for a future release."
+        echo "Non Linux (or weird Linux) support not added yet. Please wait for a future release."
         exit 0
     fi
     . /etc/os-release
@@ -215,25 +209,25 @@ detectPlatform() {
     "arch")
         INSTALLER="pacman"
         # install git and less
-        fmt_info "Detected Arch based system. Installing basic prerequisites."
+        echo "Detected Arch based system. Installing basic prerequisites."
         sudo pacman -Sy --noconfirm gum git less unzip lolcat >>/dev/null 2>&1
         ;;
     "fedora")
         echo "Fedora detected"
         if [ $(echo "$VERSION_ID > 41" | bc) != 1 ]; then
-            fmt_error "Fedora versions older than 42 are not supported!"
+            echo "Fedora versions older than 42 are not supported!"
             exit 1
         fi
-        fmt_info "Detected rpm based system. Installing basic prerequisites."
+        echo "Detected rpm based system. Installing basic prerequisites."
         sudo dnf install -y gum git less unzip lolcat >>/dev/null 2>&1
         INSTALLER="dnf"
         ;;
     "ubuntu")
         if [ $(echo "$VERSION_ID >= 24.04" | bc) != 1 ]; then
-            fmt_error "Ubuntu versions older than 24.04 are not supported!"
+            echo "Ubuntu versions older than 24.04 are not supported!"
             exit 1
         fi
-        fmt_info "Detected deb based system.  Installing basic prerequisites."
+        echo "Detected deb based system.  Installing basic prerequisites."
         sudo apt install -y git less unzip lolcat >>/dev/null 2>&1
         if [ $(echo "$VERSION_ID > 24.04" | bc) != 1 ]; then
             install_gum_ubuntu >>/dev/null 2>&1
@@ -243,7 +237,7 @@ detectPlatform() {
         INSTALLER="apt"
         ;;
     *)
-        fmt_error "Unknown Linux distro detected. Support might be added in the future!"
+        echo "Unknown Linux distro detected. Support might be added in the future!"
         exit 0
         ;;
     esac
@@ -263,12 +257,12 @@ detectPlatform
 print_header
 
 if [ -d $NOCTURNE_GIT ]; then
-    fmt_warning "Old version of Nocturne detected at $NOCTURNE_GIT"
-    fmt_warning "Proceeding with installation will delete this folder!"
+    gum style $GUM_WARN "Old version of Nocturne detected at $NOCTURNE_GIT"
+    gum style $GUM_WARN "Proceeding with installation will delete this folder!"
     gum confirm "Do you want to delete $NOCTURNE_GIT and download the latest version?" && yn=0 || yn=1
     case $yn in
     0)
-        fmt_warning "Deleting $NOCTURNE_GIT"
+        gum style $GUM_WARN "Deleting $NOCTURNE_GIT"
         rm -rf $NOCTURNE_GIT
         break
         ;;
@@ -277,7 +271,7 @@ if [ -d $NOCTURNE_GIT ]; then
         ;;
     esac
 fi
-fmt_info "Fetching Nocturne installer."
+gum style $GUM_INFO "Fetching Nocturne installer."
 git clone https://github.com/adaryorg/nocturne-dev.git $NOCTURNE_GIT >/dev/null 2>&1
 
 # show the disclaimer!

@@ -270,6 +270,7 @@ if [ -d $NOCTURNE_GIT ]; then
     0)
         fmt_warning "Deleting $NOCTURNE_GIT"
         rm -rf $NOCTURNE_GIT
+        break
         ;;
     1)
         exit 0

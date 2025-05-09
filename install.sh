@@ -3,7 +3,12 @@
 # SPDX-FileCopyrightText: 2025 Yuval Adar <adary@adary.org>
 # SPDX-License-Identifier: MIT
 
+# This script should run through curl:
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
+#
 set -e
+
+# spinner disables cursor and this trap will re-enable it if exited in the middle
 
 cleanup() {
     tput cnorm
@@ -27,6 +32,11 @@ spinner() {
         tput cnorm
         printf '\n'
     }
+
+# The following functions were mostly lifted from oh-my-zsh installer which is
+# Copyright (c) 2009-2025 Robby Russell and contributors (https://github.com/ohmyzsh/ohmyzsh/contributors)
+#
+# Adapted for Nocturne installer by Yuval Adar (adary@adary.org)
 
 # check for tty
 
@@ -62,8 +72,9 @@ supports_hyperlinks() {
   fi
 
   # If $TERM_PROGRAM is set, these terminals support hyperlinks
+  # modified from original to add ghostty
   case "$TERM_PROGRAM" in
-  Hyper|iTerm.app|terminology|WezTerm|vscode) return 0 ;;
+  Hyper|iTerm.app|terminology|WezTerm|ghostty|vscode) return 0 ;;
   esac
 
   # These termcap entries support hyperlinks
@@ -81,19 +92,8 @@ supports_hyperlinks() {
     return 0
   fi
 
-  # Konsole supports hyperlinks, but it's an opt-in setting that can't be detected
-  # https://github.com/ohmyzsh/ohmyzsh/issues/10964
-  # if [ -n "$KONSOLE_VERSION" ]; then
-  #   return 0
-  # fi
-
   return 1
 }
-
-# The following functions were mostly lifted from oh-my-zsh installer which is
-# Copyright (c) 2009-2025 Robby Russell and contributors (https://github.com/ohmyzsh/ohmyzsh/contributors)
-#
-# Adapted for Nocturne installer by Yuval Adar (adary@adary.org)
 
 supports_truecolor() {
     case "$COLORTERM" in
@@ -133,12 +133,16 @@ fmt_code() {
     is_tty && printf '`\033[2m%s\033[22m`\n' "$*" || printf '`%s`\n' "$*"
 }
 
+fmt_warning() {
+    printf '%s Warning: %s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
+}
+
 fmt_error() {
-    printf '%s%s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
+    printf '%s Error: %s%s\n' "${FMT_BOLD}${FMT_RED}" "$*" "$FMT_RESET" >&2
 }
 
 fmt_info() {
-    printf '%s%s%s\n' "${FMT_BOLD}${FMT_BLUE}" "$*" "$FMT_RESET" >&2
+    printf '%s Info: %s%s\n' "${FMT_BOLD}${FMT_BLUE}" "$*" "$FMT_RESET" >&2
 }
 
 setup_color() {
@@ -208,20 +212,17 @@ print_header() {
         ██   ████  ██████   ██████    ██     ██████  ██   ██ ██   ████ ███████
 
         Buckle up and enjoy the ride!
-        " | lolcat
+        " | lolcat #lolcat is much more fun than static rainbow colors!
     fi
 }
 
-# This script should run through curl:
-# sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
-
-# set some very important variables and stuffs
-
+# kinda important to detect the platform and make sure bare necessities are present
+# this information will be passed on to the rest of install scripts
 
 detectPlatform() {
     if [ ! -f /etc/os-release ]
     then
-        echo "Non Linux (or weird Linux) support not added yet. Please wait for a future release."
+        fmt_error "Non Linux (or weird Linux) support not added yet. Please wait for a future release."
         exit 0
     fi
     . /etc/os-release
@@ -255,7 +256,7 @@ detectPlatform() {
             INSTALLER="apt"
             ;;
         *)
-            echo "Unknown Linux distro detected. Support might be added in the future!"
+            fmt_error "Unknown Linux distro detected. Support might be added in the future!"
             exit 0
             ;;
     esac
@@ -281,8 +282,8 @@ print_header
 
 if [ -d $NOCTURNE_GIT ]
 then
-    fmt_error "Old version of Nocturne detected at $NOCTURNE_GIT"
-    fmt_error "Proceeding with installation will delete this folder!"
+    fmt_warning "Old version of Nocturne detected at $NOCTURNE_GIT"
+    fmt_warning "Proceeding with installation will delete this folder!"
 fi
 
 fmt_info "Press x to exit or any other key to continue."
@@ -293,7 +294,7 @@ if [ "$input" = "x" ]; then
 else
     if [ -d $NOCTURNE_GIT ]; then
         # lets get rid of the old version if it's there
-        fmt_error "Deleting $NOCTURNE_GIT"
+        fmt_warning "Deleting $NOCTURNE_GIT"
         rm -rf ~/.nocturne
     fi
     fmt_info "Fetching Nocturne installer."

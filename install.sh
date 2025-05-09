@@ -253,10 +253,6 @@ HOME="${HOME:-$(eval echo ~$USER)}"
 NOCTURNE=${NOCTURNE:-"$HOME/.local/share/nocturne"}
 NOCTURNE_GIT=${NOCTURNE_GIT:-"$HOME/.nocturne"}
 NOCTURNE_DOT=${NOCTURNE_DOT:-"$HOME/.nocturne_dotfiles"}
-NOCTURNE_LOG=${NOCTURNE_LOG:-"$NOCTURNE/log"}
-if [ ! -d $NOCTURNE_LOG ]; then
-    mkdir -p $NOCTURNE_LOG
-fi
 
 setup_color
 detectPlatform
@@ -265,28 +261,23 @@ print_header
 if [ -d $NOCTURNE_GIT ]; then
     fmt_warning "Old version of Nocturne detected at $NOCTURNE_GIT"
     fmt_warning "Proceeding with installation will delete this folder!"
-fi
-
-fmt_info "Press x to exit or any other key to continue."
-read -r input
-
-if [ "$input" = "x" ]; then
-    exit 0
-else
-    if [ -d $NOCTURNE_GIT ]; then
-        # lets get rid of the old version if it's there
+    yn=$(gum confirm "Do you want to delete $NOCTURNE_GIT and download the latest version?")
+    case $yn in
+    0)
         fmt_warning "Deleting $NOCTURNE_GIT"
-        rm -rf ~/.nocturne
-    fi
-    fmt_info "Fetching Nocturne installer."
-    git clone https://github.com/adaryorg/nocturne-dev.git $NOCTURNE_GIT >/dev/null 2>&1
+        rm -rf $NOCTURNE_GIT
+        ;;
+    1)
+        exit 0
+        ;;
+    esac
 fi
+fmt_info "Fetching Nocturne installer."
+git clone https://github.com/adaryorg/nocturne-dev.git $NOCTURNE_GIT >/dev/null 2>&1
 
 # show the disclaimer!
-${PAGER:-less} $NOCTURNE_GIT/disclaimer
+gum pager <$NOCTURNE_GIT/disclaimer
 
-fmt_info "Having read everything from the previously displayed text, are you sure you want to proceed?"
-fmt_info "This is not the last chance to bail about but still think about it!"
 yn=$(gum confirm "Do you want to proceed with Nocturne installation?")
 case $yn in
 0) break ;;

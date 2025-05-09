@@ -6,7 +6,7 @@
 # This script should run through curl:
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
 #
-set -e
+#set -e
 
 
 # The following functions were mostly lifted from oh-my-zsh installer which is

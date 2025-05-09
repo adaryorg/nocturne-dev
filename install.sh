@@ -6,6 +6,10 @@
 # This script should run through curl:
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
 #
+# You can also run it with wget:
+# sh -c "$(wget -qO- https://raw.githubusercontent.com/adaryorg/nocturne-dev/refs/heads/main/install.sh)"
+#
+
 set -e
 
 # The following functions were mostly lifted from oh-my-zsh installer which is

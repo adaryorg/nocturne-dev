@@ -266,6 +266,7 @@ if [ -d $NOCTURNE_GIT ]; then
     fmt_warning "Old version of Nocturne detected at $NOCTURNE_GIT"
     fmt_warning "Proceeding with installation will delete this folder!"
     yn=$(gum confirm "Do you want to delete $NOCTURNE_GIT and download the latest version?")
+    echo $yn
     case $yn in
     0)
         fmt_warning "Deleting $NOCTURNE_GIT"
@@ -281,7 +282,6 @@ fmt_info "Fetching Nocturne installer."
 git clone https://github.com/adaryorg/nocturne-dev.git $NOCTURNE_GIT >/dev/null 2>&1
 
 # show the disclaimer!
-echo "BUREK test1"
 gum pager <$NOCTURNE_GIT/disclaimer
 
 yn=$(gum confirm "Do you want to proceed with Nocturne installation?")

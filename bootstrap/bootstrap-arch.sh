@@ -32,7 +32,7 @@ gum spin --title="Installing stuff(tm)..." -- sudo pacman -Sy --noconfirm autoco
 gum spin --title="Installing lazydocker (you know you need it!)..." -- yay -Sy --noconfirm lazydocker
 
 # install nerd fonts
-gum spin --info="Installing nerd fonts..." -- sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd
+gum spin --title="Installing nerd fonts..." -- sudo pacman -Sy --noconfirm ttf-firacode-nerd ttf-jetbrains-mono-nerd ttf-cascadia-mono-nerd ttf-meslo-nerd
 
 # this will make me unpopular but we really do want all of gnome installed!
 gum spin --title="Installing GNOME packages..." -- sudo pacman -Sy --noconfirm gnome

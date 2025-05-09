@@ -281,6 +281,7 @@ fmt_info "Fetching Nocturne installer."
 git clone https://github.com/adaryorg/nocturne-dev.git $NOCTURNE_GIT >/dev/null 2>&1
 
 # show the disclaimer!
+echo "BUREK test1"
 gum pager <$NOCTURNE_GIT/disclaimer
 
 yn=$(gum confirm "Do you want to proceed with Nocturne installation?")

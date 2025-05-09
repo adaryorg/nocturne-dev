@@ -11,8 +11,7 @@ if [[ -d ~/.oh-my-zsh ]]; then
     fmt_info "oh-my-zsh already installed."
 else
     fmt_info "Installing oh-my-zsh and setting zsh as default shell."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >>$NOCTURNE_LOG/bootstrap.log 2>&1 &
-    spinner $!
+    gum spin --title="Installing oh-my-zsh..." sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >>$NOCTURNE_LOG/bootstrap.log 2>&1
     sudo -k chsh -s /usr/bin/zsh "$USER"
 fi
 
